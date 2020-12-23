@@ -22,11 +22,11 @@ evaluate(validation_data, example_preds_loc = "numerai_dataset_243\example_predi
 
 Validation plot
 
-![Sample output](.\images/nmr_eval.png)
+![Sample output](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/nmr_eval.png)
 
 Returned metrics
 
-![returned dataframe](.\images/numertest.png)
+![returned dataframe](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/numertest.png)
 
 
 Docs will be updated soon!
