@@ -4,7 +4,7 @@
 
 ### Installation
 
-`!pip install numereval`
+`pip install numereval`
 
 ### Usage: 
 
