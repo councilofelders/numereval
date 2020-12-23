@@ -1,0 +1,1 @@
+# A small library to reproduce the scores on numer.ai diagnistics dashboard.
