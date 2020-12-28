@@ -16,6 +16,8 @@ A generic function to calculate basic per-era correlation stats with optional fe
 
 Useful for evaluating custom validation split from training data.
 ```
+from numereval.numereval import evaluate
+
 evaluate(training_data, plot=True, feature_exposure=False)
 
 ---
@@ -32,12 +34,11 @@ max_drawdown    -0.000000
 To reproduce the scores on diagnostics dashboard locally with optional plotting of per-era correlations.
 
 ```
-from numereval.numereval import evaluate
+from numereval.numereval import diagnostics
 
 validation_data = tournament_data[tournament_data.data_type == "validation"]
 
-
-evaluate(validation_data, example_preds_loc = "numerai_dataset_243\example_predictions.csv")
+diagnostics(validation_data, plot=True, example_preds_loc = "numerai_dataset_244\example_predictions.csv")
 ```
 
 Validation plot
