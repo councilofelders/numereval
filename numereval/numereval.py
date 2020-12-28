@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from numereval.scores import *
 from numereval.neutralize import *
+from typing import Union
 
 
 def calculate_val_corrs(validation_data):
@@ -20,23 +21,29 @@ def calculate_sharpe(validation):
     return validation_sharpe
 
 
-def plot_correlation(validation_correlations: pd.Series):
-    colors = (
-        ["r" for _ in range(121, 132 + 1)]
-        + ["g" for _ in range(197, 206 + 1)]
-        + ["b" for _ in range(207, 212 + 1)]
-    )
+def plot_correlation(validation_correlations: pd.Series, diagnostics=False):
 
-    r_patch = mpatches.Patch(color="red", label="Val1")
-    g_patch = mpatches.Patch(color="green", label="Val2")
-    b_patch = mpatches.Patch(color="blue", label="Val3")
+    if diagnostics:
+        colors = (
+            ["#007691" for _ in range(121, 132 + 1)]
+            + ["#50bf84" for _ in range(197, 206 + 1)]
+            + ["#3ac4e1" for _ in range(207, 212 + 1)]
+        )
 
-    fig, ax = plt.subplots()
-    validation_correlations.plot(
-        kind="bar", color=colors, legend=True, title="Validation correlations"
-    )
-    ax.legend(handles=[r_patch, g_patch, b_patch])
-    plt.show()
+        r_patch = mpatches.Patch(color="#007691", label="Val1")
+        g_patch = mpatches.Patch(color="#50bf84", label="Val2")
+        b_patch = mpatches.Patch(color="#3ac4e1", label="Val3")
+
+        fig, ax = plt.subplots()
+        validation_correlations.plot(
+            kind="bar", color=colors, legend=True, title="Validation correlations"
+        )
+        ax.legend(handles=[r_patch, g_patch, b_patch])
+        plt.show()
+    else:
+        fig, ax = plt.subplots()
+        validation_correlations.plot(kind="bar", title="Correlations")
+        plt.show()
 
 
 def calculate_max_drawdown(validation_correlations: pd.Series):
@@ -67,7 +74,34 @@ def calculate_feature_exposure(validation_data):
     return max_feature_exposure, feature_exposure
 
 
-def evaluate(validation_data: pd.DataFrame, example_preds_loc: str = None):
+def evaluate(validation_data: pd.DataFrame, plot=False, feature_exposure=False):
+
+    feature_names = [f for f in validation_data.columns if f.startswith("feature")]
+
+    metrics = {}
+
+    validation_correlations = calculate_val_corrs(validation_data)
+    if plot:
+        plot_correlation(validation_correlations)
+
+    metrics["mean"] = validation_correlations.mean()
+    metrics["std"] = validation_correlations.std(ddof=0)
+    validation_sharpe = metrics["mean"] / metrics["std"]
+    metrics["sharpe"] = validation_sharpe
+    metrics["max_drawdown"] = calculate_max_drawdown(validation_correlations)
+
+    if feature_exposure:
+        (
+            metrics["max_feature_exp"],
+            metrics["feature_exposure"],
+        ) = calculate_feature_exposure(validation_data)
+
+    return pd.DataFrame.from_dict(metrics, orient="index")
+
+
+def diagnostics(
+    validation_data: pd.DataFrame, plot=False, example_preds_loc: str = None
+):
 
     if example_preds_loc is None:
         example_preds_loc = "example_predictions.csv"
@@ -77,17 +111,18 @@ def evaluate(validation_data: pd.DataFrame, example_preds_loc: str = None):
     metrics = {}
 
     validation_correlations = calculate_val_corrs(validation_data)
-    plot_correlation(validation_correlations)
+    if plot:
+        plot_correlation(validation_correlations, diagnostics=True)
 
-    metrics["validation mean"] = validation_correlations.mean()
-    metrics["validation std"] = validation_correlations.std(ddof=0)
-    validation_sharpe = metrics["validation mean"] / metrics["validation std"]
-    metrics["validation Sharpe"] = validation_sharpe
-    metrics["max drawdown"] = calculate_max_drawdown(validation_correlations)
+    metrics["mean"] = validation_correlations.mean()
+    metrics["std"] = validation_correlations.std(ddof=0)
+    validation_sharpe = metrics["mean"] / metrics["std"]
+    metrics["sharpe"] = validation_sharpe
+    metrics["max_drawdown"] = calculate_max_drawdown(validation_correlations)
 
     (
         metrics["max_feature_exp"],
-        metrics["feature exposure"],
+        metrics["feature_exposure"],
     ) = calculate_feature_exposure(validation_data)
 
     example_preds = pd.read_csv(example_preds_loc).set_index("id")["prediction"]
@@ -111,8 +146,8 @@ def evaluate(validation_data: pd.DataFrame, example_preds_loc: str = None):
     corr_plus_mmc_mean = np.mean(corr_plus_mmcs)
     corr_plus_mmc_sharpe_diff = corr_plus_mmc_sharpe - validation_sharpe
 
-    metrics["MMC Mean"] = val_mmc_mean
-    metrics["Corr Plus MMC Sharpe"] = corr_plus_mmc_sharpe
-    metrics["Corr Plus MMC Diff"] = corr_plus_mmc_sharpe_diff
+    metrics["mmc_mean"] = val_mmc_mean
+    metrics["corr_plus_mmc_sharpe"] = corr_plus_mmc_sharpe
+    metrics["corr_plus_mmc_diff"] = corr_plus_mmc_sharpe_diff
 
     return pd.DataFrame.from_dict(metrics, orient="index")
