@@ -99,18 +99,26 @@ def evaluate(validation_data: pd.DataFrame, plot=False, feature_exposure=False):
     return pd.DataFrame.from_dict(metrics, orient="index")
 
 
+
+
 def diagnostics(
     validation_data: pd.DataFrame, plot=False, example_preds_loc: str = None
 ):
+    preds = pd.read_csv(example_preds_loc)['prediction']
+    print(validation_data)
+    validation_data['prediction'] = preds
+    print(validation_data)
 
+    pd.options.mode.chained_assignment = None
     if example_preds_loc is None:
         example_preds_loc = "example_predictions.csv"
 
     feature_names = [f for f in validation_data.columns if f.startswith("feature")]
 
     metrics = {}
-
+    
     validation_correlations = calculate_val_corrs(validation_data)
+
     if plot:
         plot_correlation(validation_correlations, diagnostics=True)
 
@@ -120,20 +128,17 @@ def diagnostics(
     metrics["sharpe"] = validation_sharpe
     metrics["max_drawdown"] = calculate_max_drawdown(validation_correlations)
 
+
     (
         metrics["max_feature_exp"],
         metrics["feature_exposure"],
     ) = calculate_feature_exposure(validation_data)
 
-    example_preds = pd.read_csv(example_preds_loc).set_index("id")["prediction"]
-    validation_example_preds = example_preds.loc[validation_data.index]
-    validation_data["ExamplePreds"] = validation_example_preds
-
     mmc_scores = []
     corr_scores = []
     for _, x in validation_data.groupby("era"):
         series = neutralize_series(
-            pd.Series(unif(x[PREDICTION_NAME])), pd.Series(unif(x["ExamplePreds"]))
+            pd.Series(unif(x[TARGET_NAME])), pd.Series(unif(x["prediction"]))
         )
         mmc_scores.append(np.cov(series, x[TARGET_NAME])[0, 1] / (0.29 ** 2))
         corr_scores.append(correlation(unif(x[PREDICTION_NAME]), x[TARGET_NAME]))
@@ -150,4 +155,4 @@ def diagnostics(
     metrics["corr_plus_mmc_sharpe"] = corr_plus_mmc_sharpe
     metrics["corr_plus_mmc_diff"] = corr_plus_mmc_sharpe_diff
 
-    return pd.DataFrame.from_dict(metrics, orient="index")
+    return pd.DataFrame.from_dict(metrics, orient="index").round(4)
