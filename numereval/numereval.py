@@ -24,11 +24,6 @@ def calculate_sharpe(validation):
 def plot_correlation(validation_correlations: pd.Series, diagnostics=False):
 
     if diagnostics:
-        colors = (
-            ["#007691" for _ in range(121, 132 + 1)]
-            + ["#50bf84" for _ in range(197, 206 + 1)]
-            + ["#3ac4e1" for _ in range(207, 212 + 1)]
-        )
 
         colors = []
         era_num = validation_correlations.index.str.slice(start=3).astype(int) 
@@ -90,9 +85,14 @@ def calculate_feature_exposure(validation_data):
     return max_feature_exposure, feature_exposure
 
 
-def evaluate(validation_data: pd.DataFrame, plot=False, feature_exposure=False):
+def evaluate(validation_data: pd.DataFrame, plot=False, feature_exposure=False,
+    eras= None
+):
 
     feature_names = [f for f in validation_data.columns if f.startswith("feature")]
+
+    if eras is not None:
+        validation_data = validation_data[validation_data.era.isin(eras)]
 
     metrics = {}
 
@@ -112,7 +112,7 @@ def evaluate(validation_data: pd.DataFrame, plot=False, feature_exposure=False):
             metrics["feature_exposure"],
         ) = calculate_feature_exposure(validation_data)
 
-    return pd.DataFrame.from_dict(metrics, orient="index")
+    return pd.DataFrame.from_dict(metrics, orient="index",  columns=["metrics"]).round(4)
 
 
 def diagnostics(
@@ -178,4 +178,4 @@ def diagnostics(
     metrics["corr_plus_mmc_sharpe"] = corr_plus_mmc_sharpe
     #metrics["corr_plus_mmc_diff"] = corr_plus_mmc_sharpe_diff
     metrics["corr_example_preds"] = scores.mean()
-    return pd.DataFrame.from_dict(metrics, orient="index").round(4)
+    return pd.DataFrame.from_dict(metrics, orient="index", columns=["metrics"]).round(4)
