@@ -14,7 +14,7 @@
 
 A generic function to calculate basic per-era correlation stats with optional feature exposure and plotting.
 
-Useful for evaluating custom validation split from training data.
+Useful for evaluating custom validation split from training data without MMC metrics and correlation with example predictions.
 
 ```
 from numereval.numereval import evaluate
