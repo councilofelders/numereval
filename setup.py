@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="numereval",
-    version="0.2",
+    version="0.2.5",
     author="Suraj Parmar",
     author_email="parmarsuraj99@gmail.com",
     description="A small package for evaluating numer.ai model locally",

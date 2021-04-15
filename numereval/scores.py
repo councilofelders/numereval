@@ -4,6 +4,7 @@ import pandas as pd
 TOURNAMENT_NAME = "nomi"
 TARGET_NAME = f"target"
 PREDICTION_NAME = f"prediction"
+PREDICTION_NAME_S = "signal"
 
 
 def correlation(predictions, targets):
@@ -14,6 +15,10 @@ def correlation(predictions, targets):
 # convenience method for scoring
 def score(df):
     return correlation(df[PREDICTION_NAME], df[TARGET_NAME])
+
+
+def score_signals(df):
+    return correlation(df[PREDICTION_NAME_S], df[TARGET_NAME])
 
 
 # Payout is just the score cliped at +/-25%
