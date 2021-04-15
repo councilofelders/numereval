@@ -1,5 +1,7 @@
 # A small library to reproduce the scores on numer.ai diagnistics dashboard.
 
+[![Downloads](https://static.pepy.tech/personalized-badge/numereval?period=total&units=none&left_color=grey&right_color=blue&left_text=Downloads)](https://pepy.tech/project/numereval)
+
 ## Installation
 
 `pip install numereval`
