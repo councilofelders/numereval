@@ -69,4 +69,35 @@ Validation plot             |  Returned metrics
 :-------------------------:|:-------------------------:
 ![all eras validation plot](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/nmr_eval_some_eras.png)  |  ![all eras validation metrics](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/numertest_specific_eras.png)
 
+
+## Numerai Signals evaluation metrics
+
+Note: Since predictions are neutralized to Numerai's internal features before scoring, results from `numereval.signalseval.run_analytics()` do not represent exact diagnostics scores.
+
+
+```python
+import numereval
+from numereval.signalseval import run_analytics, score_signals
+
+#after assigning predictions
+train_era_scores = train_data.groupby(train_data.index).apply(score_signals)
+test_era_scores = test_data.groupby(test_data.index).apply(score_signals)
+
+train_scores = run_analytics(train_era_scores, plot=False)
+test_scores = run_analytics(test_era_scores, plot=True)
+
+```
+
+![Test correlation plot](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/signals_test_corr.png)
+
+
+![Test cumulative correlation plot](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/signals_test_cumulative.png)
+
+train_scores            |  test_scores
+:-------------------------:|:-------------------------:
+![train_Scores](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/signals_train_scores.png)  |  ![test_Scores](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/signals_test_scores.png)
+
+
+**Thanks to [Jason Rosenfeld](https://twitter.com/jrosenfeld13)** for allowing the `run_analytics()` to be integrated into the library.
+
 Docs will be updated soon!
