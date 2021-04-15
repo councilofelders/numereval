@@ -72,7 +72,7 @@ Validation plot             |  Returned metrics
 
 ## Numerai Signals evaluation metrics
 
-Note: Since predictions are neutralized to Numerai's internal features before scoring, results from `numereval.signalseval.run_analytics()` do not represent exact diagnostics scores.
+Note: Since predictions are neutralized against Numerai's internal features before scoring, results from `numereval.signalseval.run_analytics()` do not represent exact diagnostics and live scores.
 
 
 ```python
