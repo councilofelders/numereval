@@ -6,6 +6,8 @@
 
 `pip install numereval`
 
+<sup>Not an official Numerai tool</sup>
+
 ### Structure
 
 ![Structure](https://raw.githubusercontent.com/parmarsuraj99/numereval/master/images/numereval_structure.png)
